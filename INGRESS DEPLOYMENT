@@ -1,0 +1,62 @@
+trigger: none
+pool: CloudOps-AM-EastUS-Linux
+  # vmImage: ubuntu-latest
+#pool:
+ #vmImage: ubuntu-latest
+
+resources:
+  repositories:
+    - repository: sre-helm-charts
+      type: github
+      name: elc-digital/sre-helm-charts
+      ref: gh-pages
+      endpoint: elc-digital
+parameters:
+  - name: env
+    displayName: "Which AKS environment to install the ingress controller?"
+    type: string
+    default: 'dev'
+    values:
+    - 'dev'
+    - 'qa'
+    - 'prod'
+variables:
+- name: env
+  value: ${{ parameters.env }}
+- name: SC
+  ${{ if eq(variables['env'], 'prod') }}:
+    value: 'AKS-AM-EastUS-Prod-LFW-admin'
+  ${{ elseif eq(variables['env'], 'qa') }}:
+    value: 'AKS-AM-EastUS-QA-LFW-admin'
+  ${{ else }}:
+    value: 'AKS-AM-EastUS-Dev-LFW-admin'    
+
+steps:
+#  - checkout: sre-helm-charts
+  - checkout: self
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: 'ls -R /workspace/1/s/'
+  - task: KubernetesManifest@1
+    inputs:
+      action: 'deploy'
+      connectionType: 'kubernetesServiceConnection'
+      kubernetesServiceConnection: '$(SC)'
+      namespace: 'ingress-nginx'
+      manifests: 'Ingress-controller/Ingress-manifest.yaml'
+  
+#  - task: HelmInstaller@0
+#    inputs:
+#      helmVersion: '2.14.1'
+#      installKubectl: true
+#  - task: HelmDeploy@0
+#    inputs:
+#      connectionType: 'Kubernetes Service Connection'
+#      kubernetesServiceConnection: '$(SC)'
+#      namespace: 'ingress-nginx'
+#      command: 'upgrade'
+#      chartType: 'FilePath'
+#      chartPath: 'sre-helm-charts/generic-ingress-controller-0.1.7.tgz'
+#      releaseName: 'ingress'
+#      valueFile: 'LFW-2.0/Ingress-controller/values-${{parameters.env}}.yaml'
