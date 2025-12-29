@@ -1,0 +1,145 @@
+Template for non-java application (if repo is in git hub)
+
+
+trigger: none
+pr: none
+pool:
+ vmImage: 'ubuntu-latest'
+    
+resources:
+ repositories:
+   - repository: elc-sre
+     type: github
+     name: elc-digital/sre-azdo-templates
+     endpoint: github.com
+ 
+variables:
+ - template: templates/vars.yml@elc-sre
+ 
+steps:
+ 
+- template: templates/executeShiftLeft-v2.yml@elc-sre
+ parameters:
+   SHIFTLEFT_APP: "refunds-service"
+   SHIFTLEFT_BRANCH: 'main'
+   SHIFTLEFT_WORKING_DIR: '.'
+   SHIFTLEFT_ARG: '--js --tag branch=main'  
+
+-------------------------------------------------------------------------
+Template for java application
+
+
+
+trigger: none
+pr: none
+# pool: 'CloudOps-AP-SoutheastAsia-Linux'
+pool:
+ vmImage: 'ubuntu-latest'
+resources:
+ repositories:
+   - repository: elc-sre
+     type: github
+     name: elc-digital/sre-azdo-templates
+     endpoint: elc-digital
+variables:
+ - template: templates/vars.yml@elc-sre
+steps:
+ - checkout: self
+ - script: mvn clean package
+   
+displayName: Mvn Build
+   workingDirectory: '$(Build.SourcesDirectory)'
+ - task: PublishBuildArtifacts@1
+   inputs:
+     PathtoPublish: '$(Build.SourcesDirectory)'
+     ArtifactName: 'digital artifact'
+     # publishLocation: 'Container'
+ 
+#Scan the JAR file using ShiftLeft
+ - template: templates/executeShiftLeft-v2.yml@elc-sre
+   parameters:
+     SHIFTLEFT_APP: "elccep-DigitalCapture-backend"
+     SHIFTLEFT_BRANCH: 'dev'
+     SHIFTLEFT_WORKING_DIR: '.'
+     SHIFTLEFT_ARG: '--java dgc-web/target/dgc-web-1.0.0.jar'
+has context menu
+
+------------------------------------------------------------------------------
+     
+trigger: none
+pr: none
+pool:
+  vmImage: 'ubuntu-latest'
+  
+strategy:
+  matrix:
+    Python38:
+      python.version: '3.8'
+      
+resources:
+  repositories:
+    - repository: elc-sre
+      type: github
+      name: elc-digital/sre-azdo-templates
+      endpoint: elc-digital
+variables:
+  - template: templates/vars.yml@elc-sre
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+- template: templates/executeShiftLeft-v1.yml@elc-sre
+  parameters:
+    SHIFTLEFT_APP: "Green Score Management"
+    SHIFTLEFT_BRANCH: 'condor-qa-azfunc'
+    SHIFTLEFT_WORKING_DIR: '.'
+    SHIFTLEFT_ARG: '--python --tag branch=condor-qa-azfunc'
+--------------------------------------------------------------
+
+
+trigger: none
+pr: none
+pool:
+  vmImage: 'ubuntu-latest'
+  
+      
+resources:
+  repositories:
+    - repository: elc-sre
+      type: github
+      name: elc-digital/sre-azdo-templates
+      endpoint: elc-digital
+variables:
+  - template: templates/vars.yml@elc-sre
+steps:
+
+- template: templates/executeShiftLeft-v2.yml@elc-sre
+  parameters:
+    SHIFTLEFT_APP: "Green-Score-Management"
+    SHIFTLEFT_BRANCH: 'master'
+    SHIFTLEFT_WORKING_DIR: '.'
+    SHIFTLEFT_ARG: '--pythonsrc --tag branch=main'
+-----------------------------------------------------------
+Not specified the language
+
+trigger: none
+pr: none
+pool:
+  vmImage: 'ubuntu-latest'
+      
+resources:
+  repositories:
+    - repository: elc-sre
+      type: github
+      name: elc-digital/sre-azdo-templates
+      endpoint: elc-digital
+variables:
+  - template: templates/vars.yml@elc-sre
+steps:
+- template: templates/executeShiftLeft-v2.yml@elc-sre
+  parameters:
+    SHIFTLEFT_APP: "MVPDD-CLTR-VTO"
+    SHIFTLEFT_BRANCH: 'ADO'
+    SHIFTLEFT_WORKING_DIR: '.'
+    SHIFTLEFT_
