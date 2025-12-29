@@ -1,0 +1,24 @@
+trigger: none
+pool:
+  vmImage: 'ubuntu-latest'
+resources:
+  repositories:
+    - repository: elc-sre
+      type: github
+      name: elc-digital/sre-azdo-templates
+      endpoint: elc-digital
+      ref: main
+variables:
+  - template: templates/vars.yml@elc-sre
+  - group: sre-shared
+  - name: WORKING_DIR
+    value: '$(Build.SourcesDirectory)'
+    
+jobs:
+  - job: "DockerBuildandPush"
+    steps:
+      - template: templates/buildAndPushToAzureRegistry-v1.yml@elc-sre
+        parameters:
+          DOCKER_REGISTRY: "acrameastusprodsre"
+          DOCKER_REPOSITORY: "elc/lfw/client/dev"
+          DOCKER_PATH: "$(WORKING_DIR)/CLIENT/Docker"
