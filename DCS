@@ -1,0 +1,55 @@
+Step 1:  git clone https: https://github.com/elc-digital/sp-sre-deployment-controller-service.git
+https://github.com/elc-digital/sp-sre-deployment-controller-service/tree/dcs-aad
+Step 2:  cd sp-sre-deployment-controller-service/
+Step 3:  ls
+Step 4:  git checkout dcs-aad
+Step 5:  git pull
+Step 6:  git checkout -b ELCSRE-40927 dcs-aad     #Please give the Jira ticket number for the DCS Updation.
+Step 6.1: cd configs/
+Step 6.2: cd project-config/
+Step 7:  ls 
+              AM/     APAC/       UK/        #Please select the region you are going to update
+Step 8:  cd APAC
+Step 9:  vi <spinnaker-project-configs-apac.yml>      #Check for the configs yaml file
+ESC :/SPINAKKERAPPNAME 7YY P 
+Step 10: Edit the selected file
+         i) :se nu    # for numbers
+         ii)/<PIP-NP>  /Frontier  #search for the project 
+         iii) If it is a new application:
+              need to copy from application name i.e., around 15 lines for 3 env
+              shortcut: press <No.of lines need to copy>yy  
+                         ex: 15yy
+         iv) Paste at the end of the application 
+             shortcut: press p
+         v) edit and save the changes in the file
+Step 11:  git diff
+Step 12:  git add spinnaker-project-configs-am.yml
+Step 13:  cd ../../..                         # come to the sre-deployment-controller-service
+Step 14:  git commit -m "ELCSRE-40927"            #Please give the Jira ticket number for the DCS Updation.
+Step 15:  git push origin ELCSRE-40927            #Please give the Jira ticket number for the DCS Updation.
+Step 16:  Now the Dcs is updated
+Step 17:  Create a pull request and merge request in the Github - branch to dcsaad
+Step 18:  run the jenkins job in specific region(am,apac,uk)
+SRE-->SREPORTAL-->sre-deployment-controller-service-update-config-github
+https://jenkins.am.sre.elcompanies.com/job/SRE/job/SRE-Portal/job/sre-deployment-controller-service-update-config-github/ -->  Build parameter --> docker push set it as True 
+Step 19:  Collect the new image tag                #Docker image tag: [v20211208-113313-35085e9db04b061806b8e061873618ac2315e1f6]
+Step 20:  change the tag in
+          i) If Test Portal/ Non-Prod
+https://bitbucket.elcompanies.net/projects/SREDNP/repos/sdc-sre-non-prod/browse?at=refs%2Fheads%2Fsre-dcs-test
+          ii) If Prod SRE portal
+https://bitbucket.elcompanies.net/projects/SREDP/repos/sdc-sre-platform-prod/browse?at=refs%2Fheads%2Fsre-dcs-prod
+Step 21:  Go to the Spinnaker <AM> region or APAC
+          search for "sredcs" application
+          i) If Test Portal/ Non-Prod   - execute pl-sre-dcs-test-aad
+          ii) If Prod SRE portal        - execute pl-sre-dcs-prod-aad
+Step 22:  After successful execution check and confirm in the respective portals.
+ 
+:se nu      ---> to get the line numbers
+:nu 1502  --> for switching to the line
+sre-deployment-controller-service-update-config-github [SRE » SRE-Portal] [Jenkins] (elcompanies.com)
+
+From <https://mail.google.com/mail/u/0/#inbox/FMfcgzQZTCgKzqHZxVnsQnNPthbXFJNq?projector=1&messagePartId=0.1> 
+
+
+-------------------------------------------------------------------------------------
+ELC-SRE-CD Pipeline on boarding into DCS for SRE deployment portal - SRE Core Knowledge base - ELC Online Confluence
